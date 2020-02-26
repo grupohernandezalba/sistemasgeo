@@ -1,45 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Coordenadas con Mapa Estático</title>
-    <style>
-      #mapa {
-        width: 100%;
-        height: 350px;
-        background-color: #efefef;
-      }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API estática de Google  </title>
 </head>
 <body>
+  <button onclick="obtieneUbicacion()">Obtener ubicación</button>
+  <div id="mapa"></div>
 
-    <p>Haz clic para obtener las coordenadas de tu dispositivo</p>
-    <button onclick="obtieneUbicacion()">Obtener Coordenadas</button>
-    <p id="mensaje"></p>
+  <script>
 
-    <div id="mapa"></div>
-    
-    <script>
-    var x = document.getElementById("mensaje");
-    
-    function obtieneUbicacion() {
+    function obtieneUbicacion(){
 
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(muestraPosicion);
-      } else { 
-        x.innerHTML = "El navegador no dispone la capacidad de geolocalización";
+      if(navigator.geolocation){
+          navigator.geolocation.getCurrentPosition(muestraPosicion);
       }
-    }
-    
-    function muestraPosicion(posicion) {
-      var coordenadas = posicion.coords.latitude + "," + posicion.coords.longitude;
-      var imagenurl = "https://maps.googleapis.com/maps/api/staticmap?center=" + coordenadas + "&zoom=17&size=400x300&sensor=false&key=AIzaSyADjOfdGIg-7JiqjoTstMN9el4g-nLhxxA";
-      document.getElementById("mapa").innerHTML = "<img src='"+imagenurl+"'>";
-    }
+      else
+      {
+        alert("No");
+      }
 
-    </script>
-    
+      function muestraPosicion(posicion){
+        var coordenadas = posicion.coords.latitude + "," + posicion.coords.longitude;
+        console.log(coordenadas);
+
+        var imagenurl = "https://maps.googleapis.com/maps/api/staticmap?center=" + coordenadas + "&zoom=20&size=800x800&key=AIzaSyADjOfdGIg-7JiqjoTstMN9el4g-nLhxxA";
+        
+        console.log(imagenurl);
+
+        document.getElementById("mapa").innerHTML = "<img src=" + imagenurl + ">";
+      
+      }
+
+    }
+  </script>
+
+
 </body>
 </html>
