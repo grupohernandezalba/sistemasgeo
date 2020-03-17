@@ -1,0 +1,29 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+
+    <script>
+
+        fetch('https://jsonplaceholder.typicode.com/users', { mode: 'cors' })
+        .then(function(response) {
+            console.log(response);
+            return response.text();
+        })
+        .then(function(text) {
+            console.log('Request successful', text);
+        })
+        .catch(function(error) {
+            log('Request failed', error)
+        });
+
+    </script>
+</body>
+</html>
+ 
