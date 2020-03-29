@@ -51,7 +51,7 @@
 
     <script>
 
-        var locations = [
+        var localidades = [
                 {lat: -31.563910, lng: 147.154312},
                 {lat: -33.718234, lng: 150.363181},
                 {lat: -33.727111, lng: 150.371124},
@@ -99,24 +99,24 @@
 
             var cuenta = 1;
 
-            var markers = [];
+            var marcadores = [];
 
-            locations.forEach( location => {
-                console.log(location);
+            localidades.forEach( localidad => {
+                console.log(localidad);
 
-                let marker = new google.maps.Marker({
+                let marcador = new google.maps.Marker({
                     map: map,
-                    position: location,
+                    position: localidad,
                     label: labels[cuenta % labels.length]
                 });
 
                 cuenta++;
 
-                markers.push(marker); 
+                marcadores.push(marcador); 
 
             });
 
-            var markerCluster = new MarkerClusterer(map, markers,
+            var markerCluster = new MarkerClusterer(map, marcadores,
                 {
                     imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
                     gridSize: 60,
