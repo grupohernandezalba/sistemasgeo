@@ -5,26 +5,19 @@ auth.onAuthStateChanged( user =>{
     if(user){
         console.log('Usuario entró');
 
-
         if(navigator.geolocation){
 
-            navigator.geolocation.getCurrentPosition( position => {
+            navigator.geolocation.getCurrentPosition( position =>{
                 
-                var pos = { 
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
-    
-                db.collection('usuarios').doc(uid).update({
+
+                db.collection('usuarios').doc(user.uid).update({
                     coordenadas : {
-                        latitude :  position.coords.latitude,
+                        latitude : position.coords.latitude,
                         longitude : position.coords.longitude
                     }
                 });
-    
-    
+
             });
-    
         }
 
 
@@ -44,7 +37,7 @@ auth.onAuthStateChanged( user =>{
         emailVerified = user.emailVerified;
         uid = user.uid;  
         
-        console.log('UID:',uid);
+        console.log(name,email,photoUrl,emailVerified,uid);
 
     }
     else{
@@ -64,8 +57,6 @@ formaregistrate.addEventListener('submit',(e)=>{
     const correo = formaregistrate['rcorreo'].value;
     const contrasena = formaregistrate['rcontrasena'].value;
 
-    console.log(correo,contrasena);
-
     auth.createUserWithEmailAndPassword(correo,contrasena).then( cred =>{
 
         return db.collection('usuarios').doc(cred.user.uid).set({
@@ -80,7 +71,6 @@ formaregistrate.addEventListener('submit',(e)=>{
         formaregistrate.reset();
         formaregistrate.querySelector('.error').innerHTML = '';
     }).catch( err => {
-        console.log(err);
         formaregistrate.querySelector('.error').innerHTML = mensajeError(err.code);
     });
 

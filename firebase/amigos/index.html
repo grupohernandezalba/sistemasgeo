@@ -21,17 +21,16 @@
         .logged-in, .logged-out {
             display: none;
         }
-        #map {
 
+        #map {
             width: 100%;
             height: 640px;
-
         }
     </style>
 </head>
 <body class="bg-light">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">AMIGOS</a>
+        <a class="navbar-brand" href="#">DLS EATS</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -164,9 +163,14 @@
         </div>
     </div>
 
+    <div class="container">
+        <div class="row text-center" id="listadeplatillos">
+        </div>
+    </div>
+
     <div class="container logged-in">
         <div class="row text-center" id="map">
-            AQUI VA EL MAPA DE GOOGLE
+            VA IR MAPA
         </div>
     </div>
 
@@ -194,12 +198,13 @@
     firebase.initializeApp(firebaseConfig);
 
     const auth = firebase.auth();
+
     const db = firebase.firestore();
 
     </script>
 
     <script src="scripts/autorizacion.js"></script>
-    <script src="scripts/index.js"></script>  
+    <script src="scripts/index.js"></script>
 
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyADjOfdGIg-7JiqjoTstMN9el4g-nLhxxA" async defer></script>
 
