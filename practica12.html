@@ -2,7 +2,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eventos en Mapas</title>
+    <title>Eventos en mapas</title>
 
     <!-- Bootstrap -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -56,7 +56,7 @@
             <div class="col-12 col-md-6">
                 <div id="mapa6"></div>
                 <p>addDomListener</p>
-                <button id="btnCentrar" class="btn btn-sm btn-primary">Centrar</button>
+                <button class="btn btn-primary" id="btnCentrar">Centrar</button>
             </div>
         </div>
     </div>
@@ -78,18 +78,17 @@
 
             var marker = new google.maps.Marker({
                 position: coordenadas,
-                map: mapa1,
-                title: 'Haz clic para zoom'
+                map: mapa1
             });
 
-            marker.addListener('click', function() {
+            marker.addListener('click', function(){
                 mapa1.setZoom(8);
                 mapa1.setCenter(marker.getPosition());
             });
 
 
+            /*     MAPA2       */
 
-            /*     MAPA2     */
             var mapa2 = new google.maps.Map(document.getElementById('mapa2'),propiedades);
 
             var marker2 = new google.maps.Marker({
@@ -97,75 +96,91 @@
                 map: mapa2
             });
 
-            mapa2.addListener('center_changed', function() {
-                // Después de 3 segundos regresa al centro del mapa
-                window.setTimeout(function() {
-                    mapa2.panTo(marker.getPosition());
-                }, 3000);
+            mapa2.addListener('center_changed', function(){
+
+                window.setTimeout( function(){
+                    mapa2.panTo(marker2.getPosition());
+                },3000);
+
             });
 
 
 
+            /*     MAPA3       */
 
-            /*     MAPA3     */
             var mapa3 = new google.maps.Map(document.getElementById('mapa3'),propiedades);
 
             var infowindow = new google.maps.InfoWindow({
-                content: 'Cambia el Zoom',
-                position: coordenadas
+                content : 'Cambia el zoom',
+                position : coordenadas
             });
+
             infowindow.open(mapa3);
 
-            mapa3.addListener('zoom_changed', function() {
-                infowindow.setContent('Zoom: ' + mapa3.getZoom());
+            mapa3.addListener('zoom_changed', function(){
+                infowindow.setContent('Zoom' + mapa3.getZoom());
             });
 
 
-            /*     MAPA4     */
+            /*     MAPA4      */
+
             var mapa4 = new google.maps.Map(document.getElementById('mapa4'),propiedades);
 
-            mapa4.addListener('click', function(e) {
+
+            mapa4.addListener('click', function(e){
                 console.log(e.latLng);
-                placeMarkerAndPanTo(e.latLng);
+
+                estableceMarcador(e.latLng);
             });
 
-            function placeMarkerAndPanTo(latLng) {
+            function estableceMarcador(latLng){
+
                 var marker = new google.maps.Marker({
                     position: latLng,
                     map: mapa4
                 });
+
                 mapa4.panTo(latLng);
+
             }
 
+            /*     MAPA5      */
 
-            /*     MAPA5     */
             var mapa5 = new google.maps.Map(document.getElementById('mapa5'),propiedades);
-            var infoWindow = new google.maps.InfoWindow(
-                {
-                    content: 'Click the map to get Lat/Lng!', 
-                    position: coordenadas
-                }
-            );
-            infoWindow.open(mapa5);
 
-            mapa5.addListener('click', function(mapsMouseEvent) {
-                infoWindow.close();
-                infoWindow = new google.maps.InfoWindow({position: mapsMouseEvent.latLng});
-                infoWindow.setContent(mapsMouseEvent.latLng.toString());
-                infoWindow.open(mapa5);
+            var infowindow = new google.maps.InfoWindow({
+                content : 'Haz click para obtener las coordenadas',
+                position : coordenadas
             });
 
+            infowindow.open(mapa5);
 
-            /*     MAPA6     */
+            mapa5.addListener('click', function(evento){
+                infowindow.close();
+
+                infowindow = new google.maps.InfoWindow({ position: evento.latLng });
+                infowindow.setContent(evento.latLng.toString());
+                infowindow.open(mapa5);
+
+            });
+
+            /*     MAPA6   */
+
             var mapa6 = new google.maps.Map(document.getElementById('mapa6'),propiedades);
 
-            google.maps.event.addDomListener(mapa6, 'click', function() {
-                window.alert('Hizo clic en el mapa');
+            google.maps.event.addDomListener(mapa6, 'click', function(){
+                window.alert(' Se hizo click en el mapa');
             });
 
-            google.maps.event.addDomListener(document.getElementById('btnCentrar'), 'click', function() {
-                mapa6.panTo(coordenadas);
+            var boton = document.getElementById('btnCentrar');
+            google.maps.event.addDomListener(boton, 'click', function(){
+                 mapa6.panTo(coordenadas);
             });
+
+
+
+
+
 
         }
 
