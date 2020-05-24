@@ -15,11 +15,14 @@
     <link href="css/style.css" rel="stylesheet">
 
     <style>
+
         #map {
             width: 100%;
             height: 340px;
         }
+
     </style>
+
 </head>
 
 <body>
@@ -50,6 +53,7 @@
                     <a href="minor.html"><i class="fa fa-th-large"></i> <span class="nav-label">Minor view</span> </a>
                 </li>
             </ul>
+
         </div>
     </nav>
 
@@ -82,31 +86,28 @@
                             UTILIZANDO INSPINIA
                         </h1>
                         <small>
-                            Tema para proyectos de desarrollo web.
+                            Tema para proyectos web.
                         </small>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="row wrapper border-bottom white-bg page-heading">
-            <div class="col-12 col-md-3">
-                <h2>MAPAS CON PLACES</h2>
-                <p>Sistemas Georeferenciados</p>
+
+        <div class="row  border-bottom white-bg dashboard-header">
+
+            <div class="col-md-3">
+                <h2>MAPA CON PLACES</h2>
+                <small>Sistemas Georeferenciados</small>
                 <input type="text" id="buscar" class="form-control">
-                <button class="btn btn-primary" id="btnBuscar">Buscar</button>
+                <button class="btn btn-primary" id="btnBuscar"> Buscar</button>
             </div>
-            <div class="col-12 col-md-9 p-3">
+            <div class="col-md-9">
                 <div id="map"></div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="wrapper wrapper-content">
-                    MAS CONTENIDO
-                </div>
-            </div>
-        </div>
+
+    </div>
+
 
         <div class="footer">
             <div class="pull-right">
@@ -117,9 +118,11 @@
             </div>
         </div>
 
+
+
+
     </div>
 </div>
-
 
 
 
@@ -127,78 +130,70 @@
  
     var map;
     var service;
-    var infowindow;
-
+    var infoWindow;
 
     var btnBuscar = document.getElementById('btnBuscar');
 
-
     btnBuscar.addEventListener('click', function(){
 
-      var buscar = document.getElementById('buscar');
+        var buscar = document.getElementById('buscar');
 
-      console.log(buscar.value);
+        console.log(buscar.value);
 
-      var request = {
-        query: buscar.value,
-        fields: ['place_id', 'name', 'formatted_address', 'icon', 'geometry'],
-      };
+        var request = {
+            query: buscar.value,
+            fields: ['place_id','name','formatted_address','icon','geometry']
+        };
 
-      service = new google.maps.places.PlacesService(map);
+        service = new google.maps.places.PlacesService(map);
 
-      service.findPlaceFromQuery(request, function(results, status) {
-        if (status === google.maps.places.PlacesServiceStatus.OK) {
-          console.log(results.length);
-          for (var i = 0; i < results.length; i++) {
-            createMarker(results[i]);
-          }
 
-          map.setCenter(results[0].geometry.location);
+        service.findPlaceFromQuery(request, function(results, status){
+
+            if( status === google.maps.places.PlacesServiceStatus.OK ){
+
+                for ( var i=0; i< results.length; i++) {
+                    createMarker(results[i]);
+                }
+
+                map.setCenter(results[0].geometry.location);
+
+            }
+
+
+        });
+
+        function createMarker(place) {
+
+            var icono = {
+                url : place.icon,
+                scaledSize : new google.maps.Size(25,25),
+                origin: new google.maps.Point(0,0),
+                anchor: new google.maps.Point(0,0)
+            };
+
+            var marker = new google.maps.Marker({
+                map: map,
+                position: place.geometry.location,
+                icon: icono
+            });
+
+            google.maps.event.addListener(marker, 'click', function(){
+
+                infoWindow.setContent(place.name + ', '+place.formatted_address);
+                infoWindow.open(map, this);
+
+            });
+
+
+
         }
-      });
 
-
-
-      function createMarker(place) {
-
-
-        var icono = {
-  url: place.icon,
-  scaledSize: new google.maps.Size(25, 25), // scaled size
-  origin: new google.maps.Point(0,0), // origin
-  anchor: new google.maps.Point(0, 0) // anchor
-};
-
-
-      var marker = new google.maps.Marker({
-        map: map,
-        position: place.geometry.location,
-        icon: icono
-      });
-
-      google.maps.event.addListener(marker, 'click', function() {
-
-        console.log(place.place_id);
-        console.log(place.formatted_address);
-        console.log(place.icon);
-        console.log(place.geometry);
-
-        infowindow.setContent(place.name);
-        infowindow.open(map, this);
-      });
-
-    }
 
 
     });
 
-
-
-
-
-    function iniciaMapa() {
-
-
+    function iniciaMapa(){
 
         var coordenadas = {  lat: 21.152639, lng:  -101.711598 };
 
@@ -207,31 +202,29 @@
             zoom: 12
         };
 
+        infoWindow = new google.maps.InfoWindow();
 
-    infowindow = new google.maps.InfoWindow();
-
-    map = new google.maps.Map(document.getElementById('map'), propiedades );
+        map = new google.maps.Map(document.getElementById('map'),propiedades);
 
 
     }
-  </script>
+</script>
 
 
-<!-- Mainly scripts -->
-<script src="js/jquery-3.1.1.min.js"></script>
-<script src="js/popper.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
-<script src="js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+    <!-- Mainly scripts -->
+    <script src="js/jquery-3.1.1.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
+    <script src="js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
 
-<!-- Custom and plugin javascript -->
-<script src="js/inspinia.js"></script>
-<script src="js/plugins/pace/pace.min.js"></script>
+    <!-- Custom and plugin javascript -->
+    <script src="js/inspinia.js"></script>
+    <script src="js/plugins/pace/pace.min.js"></script>
+
 
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyADjOfdGIg-7JiqjoTstMN9el4g-nLhxxA&libraries=places&callback=iniciaMapa" async defer></script>
-
-
 
 </body>
 
