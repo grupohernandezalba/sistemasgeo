@@ -1,0 +1,165 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Places</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <style>
+
+        html, body {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        #map {
+            width: 100%;
+            height: 340px;
+        }
+    </style>
+</head>
+<body>
+
+ 
+    <div class="container">
+        <div class="row m-2">
+            <div class="col-4">
+                <select name="tipo" id="tipo" class="form-control">
+                    <option value="atm">Cajero automático</option>
+                    <option value="dentist" selected>Dentista</option>
+                    <option value="clothing_store">Boutique</option>
+                    <option value="store" selected>Tienda</option>
+                </select>
+                <ul id="places"></ul>
+            </div>
+            <div class="col-8">
+                <div id="map"></div>
+            </div>
+        </div>
+    </div>
+    <div id="map"></div>
+
+
+    <script>
+
+        var map;
+        var coordenadas = {  lat: 21.152639, lng:  -101.711598 };
+        var markers = [];
+
+        function iniciaMapa() {
+    
+
+            var propiedades = {
+                center: coordenadas,
+                zoom: 12
+            };
+
+            map = new google.maps.Map(document.getElementById('map'), propiedades);
+
+           muestraLugares();
+
+        }
+
+        var tipo = document.getElementById('tipo');
+
+        tipo.addEventListener('change', function(){
+            var valor = this.options[tipo.selectedIndex].value;
+            console.log(valor);
+            muestraLugares();
+        });
+
+        function  muestraLugares(){
+
+            if (navigator.geolocation) 
+            {
+
+                navigator.geolocation.getCurrentPosition( (position) => {
+                    coordenadas = { 
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+
+                    var tipo = document.getElementById("tipo");
+                    var valor = tipo.options[tipo.selectedIndex].value;
+
+                    var service = new google.maps.places.PlacesService(map);
+                    service.nearbySearch({ location: coordenadas, radius: 1000, type: [valor]},
+                        function(results, status, pagination) {
+                            
+                            if (status !== 'OK') return;
+
+                            creaMarcadores(results);
+
+                    });
+
+                });
+            }
+        }
+
+    function creaMarcadores(places) {
+        var bounds = new google.maps.LatLngBounds();
+        var placesList = document.getElementById('places');
+
+        borraMarcadores();
+
+        for (var i = 0, place; place = places[i]; i++) 
+        {
+
+            var marker = new google.maps.Marker({
+            map: map,
+            title: '<strong>' + place.name + '</strong>, ' + place.vicinity,
+            position: place.geometry.location
+            });
+
+            markers.push(marker);
+
+            google.maps.event.addListener(marker,'mouseover', function(){
+
+                var infowindow = new google.maps.InfoWindow({
+                    content :  this.title ,
+                    position : this.position
+                });
+
+                infowindow.open(map);
+
+                setTimeout(function () { infowindow.close(); }, 3000);
+
+            });
+
+            var li = document.createElement('li');
+            li.textContent = place.name;
+            placesList.appendChild(li);
+
+            bounds.extend(place.geometry.location);
+        }
+
+        map.fitBounds(bounds);
+    }
+
+    function borraMarcadores(){
+        for (var i = 0; i < markers.length; i++) {
+            markers[i].setMap(null);
+        }
+        markers = [];
+
+        //Borra textos
+
+        while (places.hasChildNodes()) {  
+            places.removeChild(places.firstChild);
+        }
+    }
+
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyADjOfdGIg-7JiqjoTstMN9el4g-nLhxxA&libraries=places&callback=iniciaMapa" async defer></script>
+
+
+</script>
+
+
