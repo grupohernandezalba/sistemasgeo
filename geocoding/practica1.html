@@ -2,7 +2,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eventos en mapas</title>
+    <title>Geocoding</title>
 
     <!-- Bootstrap -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -29,22 +29,22 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-12 col-md-6">
-                  <div id="map"></div>
-                  <input type="text" id="domicilio" autocomplete="off" placeholder="Ingrese un domicilio o lugar">
-                  <button id="btnBuscar" class="btn btn-primary">Buscar geocoding</button>
+            <div class="col-6">
+                <div id="map"></div>
+                <input type="text" name="domicilio" id="domicilio" class="form-control" autocomplete="off" placeholder="Ingrese un domicilio o un lugar">
+                <button class="btn btn-primary" id="btnBuscar">Buscar geocoding</button>
             </div>
-            <div class="col-12 col-md-6 text-left">
+            <div class="col-6">
                 <div id="resultados"></div>
             </div>
         </div>
         <div class="row">
-            <div class="col-12 col-md-6">
-                  <div id="map2"></div>
-                  <input type="text" id="latitudelongitud" autocomplete="off" placeholder="Ingrese Latitud y Longitud">
-                  <button id="btnBuscar2" class="btn btn-primary">Buscar reverse geocoding</button>
+            <div class="col-6">
+                <div id="map2"></div>
+                <input type="text" name="latitudlongitud" id="latitudlongitud" class="form-control" autocomplete="off" placeholder="Ingrese un domicilio o un lugar">
+                <button class="btn btn-primary" id="btnBuscar2">Buscar reversa geocoding</button>
             </div>
-            <div class="col-12 col-md-6 text-left">
+            <div class="col-6">
                 <div id="resultados2"></div>
             </div>
         </div>
@@ -52,6 +52,10 @@
     
 
     <script>
+
+
+        var map;
+
 
         function iniciaMapa(){
 
@@ -63,80 +67,100 @@
                 zoom: 12
             };
 
-            var map = new google.maps.Map(document.getElementById('map'),propiedades);    
+            map = new google.maps.Map(document.getElementById('map'),propiedades);
 
             var btnBuscar = document.getElementById('btnBuscar');
 
             btnBuscar.addEventListener('click', function(){
 
-                  var domicilio = document.getElementById('domicilio').value;
-                  geocoder = new google.maps.Geocoder();
-                  console.log(domicilio);
-                  geocoder.geocode( { 'address': domicilio, region: 'Guanajuato' }, function(results, status) {
+                var domicilio = document.getElementById('domicilio').value;
+                console.log(domicilio);
 
+                geocoder = new google.maps.Geocoder();
+
+                geocoder.geocode( { 'address': domicilio, region: 'Guanajuato' }, function( results, status ){
+                    
+                    if(status == 'OK')
+                    {
                         console.log(results);
-
                         var resultados = document.getElementById('resultados');
-
-
-
                         resultados.innerHTML = `
-                              <p><strong>Coordenadas:</strong> ${results[0].geometry.location}</p>
-                              <p><strong>Detalles:</strong> ${results[0].formatted_address}</p>
+                            <p><strong>Coordenadas:</strong> ${  results[0].geometry.location }</p>
+                            <p><strong>Detalles:</strong> ${ results[0].formatted_address} </p>
                         `;
 
-                        if (status == 'OK') 
-                        {
-                              map.setCenter(results[0].geometry.location);
-                              var marker = new google.maps.Marker({
-                                    map: map,
-                                    position: results[0].geometry.location
-                              });
-                        } else {
-                              alert('Geocode was not successful for the following reason: ' + status);
-                        }
-                  });
-                   
+                        map.setCenter(results[0].geometry.location);
+                        var marker = new google.maps.Marker({
+                            map: map,
+                            position: results[0].geometry.location
+
+                        });
+
+
+                    }
+                    else
+                    {
+                        alert('Geocode no se ejecuto con éxito.');
+                    }
+                    
+
+                });
+
             });
 
 
-            var map2 = new google.maps.Map(document.getElementById('map2'),propiedades);  
 
+            map2 = new google.maps.Map(document.getElementById('map2'),propiedades);
             var btnBuscar2 = document.getElementById('btnBuscar2');
             btnBuscar2.addEventListener('click', function(){
- 
-                  var latitudelongitud = document.getElementById('latitudelongitud').value;
-                  var latlngStr = latitudelongitud.split(',', 2);
-                  var latlng = {lat: parseFloat(latlngStr[0]), lng: parseFloat(latlngStr[1])};
 
-                  geocoder = new google.maps.Geocoder();
- 
-                  geocoder.geocode( { 'location': latlng }, function(results, status) {
+                var latitudlongitud = document.getElementById('latitudlongitud').value;
 
-                        console.log(results);
+                var latlngStr = latitudlongitud.split(',',2);
+
+                var latlng = {  lat: parseFloat(latlngStr[0]), lng: parseFloat(latlngStr[1])};
+
+                console.log(latlng);
+
+                geocoder = new google.maps.Geocoder();
+
+                geocoder.geocode({ 'location': latlng }, function(results, status){
+
+                    if(status == 'OK')
+                    {
+
 
                         var resultados2 = document.getElementById('resultados2');
-
                         resultados2.innerHTML = `
-                              <p><strong>Detalles:</strong> ${results[0].formatted_address}</p>
+                            <p><strong>Detalles:</strong> ${ results[0].formatted_address} </p>
                         `;
 
-                        if (status == 'OK') 
-                        {
-                              map2.setCenter(results[0].geometry.location);
-                              var marker = new google.maps.Marker({
-                                    map: map2,
-                                    position: results[0].geometry.location
-                              });
-                        } else {
-                              alert('Geocode was not successful for the following reason: ' + status);
-                        }
-                  });
+                        map2.setCenter(results[0].geometry.location);
+                        var marker = new google.maps.Marker({
+                            map: map2,
+                            position: results[0].geometry.location
+                        });
+
+                    }
+                    else
+                    {
+                        alert('Geocode no se ejecuto con éxito.');
+                    }
+
+                });
+ 
 
             });
 
 
         }
+
+ 
+ 
+
+ 
+
+ 
 
     </script>
 
@@ -145,7 +169,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyADjOfdGIg-7JiqjoTstMN9el4g-nLhxxA&callback=iniciaMapa" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyADjOfdGIg-7JiqjoTstMN9el4g-nLhxxA&libraries=places&callback=iniciaMapa" async defer></script>
 
 </body>
 </html>
