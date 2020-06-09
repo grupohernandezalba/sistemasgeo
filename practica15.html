@@ -5,178 +5,156 @@
     <title>Place Autocomplete Address Form</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+
     <style>
-      /* Always set the map height explicitly to define the size of the div
-       * element that contains the map. */
       #map {
-        height: 100%;
-      }
-      /* Optional: Makes the sample page fill the window. */
-      html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
+        width: 100%;
+        height: 350px;
       }
     </style>
-    <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500">
-    <style>
-      #locationField, #controls {
-        position: relative;
-        width: 480px;
-      }
-      #autocomplete {
-        position: absolute;
-        top: 0px;
-        left: 0px;
-        width: 99%;
-      }
-      .label {
-        text-align: right;
-        font-weight: bold;
-        width: 100px;
-        color: #303030;
-        font-family: "Roboto";
-      }
-      #address {
-        border: 1px solid #000090;
-        background-color: #f0f9ff;
-        width: 480px;
-        padding-right: 2px;
-      }
-      #address td {
-        font-size: 10pt;
-      }
-      .field {
-        width: 99%;
-      }
-      .slimField {
-        width: 80px;
-      }
-      .wideField {
-        width: 200px;
-      }
-      #locationField {
-        height: 20px;
-        margin-bottom: 2px;
-      }
-    </style>
+
+ 
   </head>
 
   <body>
-    <div id="locationField">
-      <input id="autocomplete"
-             placeholder="Ingresa tu domicilio"
-             onFocus="geolocate()"
-             type="text" autocomplete="off"/>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          Buscar: <input id="autocomplete" class="form-control" placeholder="Ingresa tu domicilio" onFocus="geolocate()" type="text" autocomplete="off"/>
+        </div>
+      </div>
     </div>
 
-    <!-- Note: The address components in this sample are typical. You might need to adjust them for
-               the locations relevant to your app. For more information, see
-         https://developers.google.com/maps/documentation/javascript/examples/places-autocomplete-addressform
-    -->
+    <div class="container bg-light rounded shadow my-3 p-3">
+      <div class="row">
+        <div class="col-12 col-md-6">
+          Calle: <input id="route" class="form-control"/>
+        </div>
+        <div class="col-12 col-md-6">
+          No: <input id="street_number" class="form-control"/>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12 col-md-6">
+          Ciudad: <input id="locality" class="form-control"/>
+        </div>
+        <div class="col-12 col-md-6">
+          Estado: <input id="administrative_area_level_1" class="form-control"/>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12 col-md-6">
+          CP: <input id="postal_code" class="form-control"/>
+        </div>
+        <div class="col-12 col-md-6">
+          Páis: <input id="country" class="form-control"/>
+        </div>
+      </div>
+    </div>
 
-    <table id="address">
-      <tr>
-        <td class="label">Street address</td>
-        <td class="slimField"><input class="field" id="street_number" disabled="true"/></td>
-        <td class="wideField" colspan="2"><input class="field" id="route" disabled="true"/></td>
-      </tr>
-      <tr>
-        <td class="label">City</td>
-        <td class="wideField" colspan="3"><input class="field" id="locality" disabled="true"/></td>
-      </tr>
-      <tr>
-        <td class="label">State</td>
-        <td class="slimField"><input class="field" id="administrative_area_level_1" disabled="true"/></td>
-        <td class="label">Zip code</td>
-        <td class="wideField"><input class="field" id="postal_code" disabled="true"/></td>
-      </tr>
-      <tr>
-        <td class="label">Country</td>
-        <td class="wideField" colspan="3"><input class="field" id="country" disabled="true"/></td>
-      </tr>
-    </table>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <div id="map"></div>
+        </div>
+      </div>
+    </div>
+
 
     <script>
-// This sample uses the Autocomplete widget to help the user select a
-// place, then it retrieves the address components associated with that
-// place, and then it populates the form fields with those details.
-// This sample requires the Places library. Include the libraries=places
-// parameter when you first load the API. For example:
-// <script
-// src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
 
 var placeSearch, autocomplete;
 
-var componentForm = {
-  street_number: 'short_name',
-  route: 'long_name',
-  locality: 'long_name',
-  administrative_area_level_1: 'short_name',
-  country: 'long_name',
-  postal_code: 'short_name'
-};
+  var componentForm = {
+    street_number: 'short_name',
+    route: 'long_name',
+    locality: 'long_name',
+    administrative_area_level_1: 'short_name',
+    country: 'long_name',
+    postal_code: 'short_name'
+  };
 
-function initAutocomplete() {
-  // Create the autocomplete object, restricting the search predictions to
-  // geographical location types.
-  autocomplete = new google.maps.places.Autocomplete(
-      document.getElementById('autocomplete'), {types: ['geocode']});
+  var coordenadas = {  lat: 21.152639, lng:  -101.711598 };
 
-  // Avoid paying for data that you don't need by restricting the set of
-  // place fields that are returned to just the address components.
-  autocomplete.setFields(['address_component']);
+  var propiedades = {
+      center: coordenadas,
+      zoom: 12
+  };
 
-  // When the user selects an address from the drop-down, populate the
-  // address fields in the form.
-  autocomplete.addListener('place_changed', fillInAddress);
-}
+  function initAutocomplete() {
 
-function fillInAddress() {
-  // Get the place details from the autocomplete object.
-  var place = autocomplete.getPlace();
 
-  for (var component in componentForm) {
-    document.getElementById(component).value = '';
-    document.getElementById(component).disabled = false;
+    map = new google.maps.Map(document.getElementById('map'),propiedades);
+
+    var autocompletado = document.getElementById('autocomplete');
+    autocomplete = new google.maps.places.Autocomplete(autocompletado, {types: ['geocode']});
+    autocomplete.setFields(['address_component','geometry']);
+    autocomplete.addListener('place_changed', obtieneDatos);
+    
   }
 
-  // Get each component of the address from the place details,
-  // and then fill-in the corresponding field on the form.
-  for (var i = 0; i < place.address_components.length; i++) {
-    var addressType = place.address_components[i].types[0];
-    if (componentForm[addressType]) {
-      var val = place.address_components[i][componentForm[addressType]];
-      document.getElementById(addressType).value = val;
+  function obtieneDatos() {
+
+    var place = autocomplete.getPlace();
+    console.log(place);
+
+    var marker = new google.maps.Marker({
+        position: place.geometry.location,
+        map: map
+    });
+
+    map.panTo(place.geometry.location);
+    map.setZoom(18);
+    map.setCenter(place.geometry.location);
+
+    for (var i = 0; i < place.address_components.length; i++) {
+
+      var addressType = place.address_components[i].types[0];
+
+      console.log(addressType);
+
+      if (componentForm[addressType]) {
+        var val = place.address_components[i]['long_name'];
+        document.getElementById(addressType).value = val;
+      }
     }
   }
-}
 
-// Bias the autocomplete object to the user's geographical location,
-// as supplied by the browser's 'navigator.geolocation' object.
-function geolocate() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(function(position) {
-      var geolocation = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-      };
+ 
+  function geolocate() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        var geolocation = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
 
-      console.log(geolocation);
-      console.log('Accuracy:',position.coords.accuracy);
 
-      var circle = new google.maps.Circle(
-          {center: geolocation, radius: position.coords.accuracy});
+        var circle = new google.maps.Circle(
+            {center: geolocation, radius: position.coords.accuracy});
 
-      console.log(circle.getBounds());
+        //console.log(circle.getBounds());
 
-      autocomplete.setBounds(circle.getBounds());
+        autocomplete.setBounds(circle.getBounds());
 
-    });
+      });
+    }
   }
-}
-    </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyADjOfdGIg-7JiqjoTstMN9el4g-nLhxxA&libraries=places&callback=initAutocomplete"
-        async defer></script>
+  
+  </script>
+
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyADjOfdGIg-7JiqjoTstMN9el4g-nLhxxA&libraries=places&callback=initAutocomplete" async defer></script>
+  
   </body>
 </html>
